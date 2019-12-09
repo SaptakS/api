@@ -501,10 +501,8 @@ def list_measurements(
         Fastpath.measurement_start_time.label("measurement_start_time"),
         func.concat(FASTPATH_MSM_ID_PREFIX, Fastpath.tid).label("measurement_id"),
         func.coalesce(0).label("m_report_no"),
-        func.coalesce(
-            (cast(cast(Fastpath.scores["blocking_general"], String), Float) > 0.5)
-        ).label("anomaly"),
-        func.coalesce(false()).label("confirmed"),
+        Fastpath.anomaly.label("anomaly"),
+        Fastpath.confirmed.label("confirmed"),
         func.coalesce(false()).label("msm_failure"),
         cast(Fastpath.scores.label("scores"), String),
         func.coalesce([0]).label("exc"),
@@ -540,11 +538,9 @@ def list_measurements(
     if input_:
         fpq = fpq.filter(Fastpath.input == input_)
     if confirmed is not None:
-        fpq = fpq.filter(False)
+        fpq = fpq.filter(Fastpath.confirmed == confirmed)
     if anomaly is not None:
-        fpq = fpq.filter(
-            cast(cast(Fastpath.scores["blocking_general"], String), Float) > 0.5
-        )
+        fpq = fpq.filter(Fastpath.anomaly == anomaly)
     if order_by is not None:
         q = q.order_by(text("{} {}".format(order_by, order)))
     q = q.limit(limit).offset(offset)

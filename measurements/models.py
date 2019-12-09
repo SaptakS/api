@@ -186,3 +186,5 @@ class Fastpath(Base):
     measurement_start_time = Column(DateTime)
     filename = Column(String)
     scores = Column(JSON)
+    anomaly = Column(Boolean)
+    confirmed = Column(Boolean)
